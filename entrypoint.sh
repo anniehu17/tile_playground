@@ -1,13 +1,21 @@
 #!/bin/bash
 set -e
 
-# Install build dependencies
-apt-get update && apt-get install -y cmake build-essential git
+echo "Installing minimal build dependencies..."
+apt-get update && apt-get install -y --no-install-recommends \
+  cmake \
+  build-essential \
+  git \
+  && rm -rf /var/lib/apt/lists/*
 
-# Install TileLang with minimal parallelism
 echo "Installing TileLang..."
-MAKEFLAGS="-j1" pip3 install git+https://github.com/tile-ai/tilelang.git
+# Install with minimal parallelism and minimal dependencies
+MAKEFLAGS="-j1" CMAKE_BUILD_PARALLEL_LEVEL=1 pip3 install --no-cache-dir git+https://github.com/tile-ai/tilelang.git
 
-# Run the application
+echo "Cleaning up build dependencies..."
+apt-get purge -y cmake build-essential git
+apt-get autoremove -y
+apt-get clean
+
 echo "Running application..."
 python3 /app/gemm.py
