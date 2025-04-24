@@ -1,21 +1,20 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
-echo "Installing minimal build dependencies..."
+# Install only the dependencies we need
+echo "Installing dependencies..."
 apt-get update && apt-get install -y --no-install-recommends \
+  python3 \
+  python3-pip \
   cmake \
   build-essential \
   git \
   && rm -rf /var/lib/apt/lists/*
 
+# Install TileLang which will pull in PyTorch as needed
 echo "Installing TileLang..."
-# Install with minimal parallelism and minimal dependencies
-MAKEFLAGS="-j1" CMAKE_BUILD_PARALLEL_LEVEL=1 pip3 install --no-cache-dir git+https://github.com/tile-ai/tilelang.git
+MAKEFLAGS="-j1" CMAKE_BUILD_PARALLEL_LEVEL=1 pip3 install git+https://github.com/tile-ai/tilelang.git
 
-echo "Cleaning up build dependencies..."
-apt-get purge -y cmake build-essential git
-apt-get autoremove -y
-apt-get clean
-
-echo "Running application..."
+# Run the application
+echo "Running TileLang GEMM application..."
 python3 /app/gemm.py
