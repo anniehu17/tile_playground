@@ -17,7 +17,13 @@ apt-get update && apt-get install -y --no-install-recommends \
 echo "Installing CUDA toolkit..."
 wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/cuda-keyring_1.1-1_all.deb
 dpkg -i cuda-keyring_1.1-1_all.deb
-apt-get update && apt-get install -y cuda-nvcc-12-1
+apt-get update && apt-get install -y \
+  cuda-nvcc-12-1 \
+  cuda-nvrtc-12-1 \
+  cuda-nvrtc-dev-12-1 \
+  cuda-cudart-dev-12-1 \
+  libcublas-12-1 \
+  libcublas-dev-12-1
 rm cuda-keyring_1.1-1_all.deb
 
 # Set CUDA environment variables
