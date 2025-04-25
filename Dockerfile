@@ -1,14 +1,19 @@
-# Use a minimal base image with CUDA support
-FROM --platform=linux/amd64 nvidia/cuda:12.1.0-base-ubuntu22.04
+FROM nvidia/cuda:12.1.0-base-ubuntu22.04
 
 # Set up a working directory
 WORKDIR /app
 
-# Copy your Python script and entrypoint into the container
-COPY gemm.py entrypoint.sh /app/
+# Install Python and pip
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
 
-# Make entrypoint executable
-RUN chmod +x /app/entrypoint.sh
+# Copy your Python script into the container
+COPY gemm.py /app/
+
+# Install TileLang - add appropriate permissions for compilation
+RUN pip install tilelang -f https://tile-ai.github.io/whl/nightly/cu121/
 
 # Command to run when the container starts
-ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["python3", "/app/gemm.py"]
